@@ -1,0 +1,84 @@
+name: Directory Submissions
+
+on:
+  schedule:
+    - cron: '0 14 * * 3'   # Wednesday 14:00 UTC
+  workflow_dispatch:
+    inputs:
+      check_only:
+        description: 'Check only (no pitches, no submissions, no email)'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: directory-submissions
+  cancel-in-progress: false
+
+jobs:
+  run:
+    # Scheduled runs are off until the repository variable ENABLE_SCHEDULE is 'true',
+    # so a fresh fork or an unconfigured copy never runs (or fails) on its own.
+    if: github.event_name == 'workflow_dispatch' || vars.ENABLE_SCHEDULE == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+      - run: npm test
+
+      # The browser is only needed when auto-submit is switched on
+      - name: Install browser
+        if: vars.DIRECTORY_AUTOSUBMIT == 'true'
+        run: npx playwright install --with-deps chromium
+
+      # config/directories.json is gitignored; CI writes it from a repository variable
+      - name: Write directory config
+        env:
+          DIRECTORIES_JSON: ${{ vars.DIRECTORIES_JSON }}
+        run: |
+          if [ -n "$DIRECTORIES_JSON" ]; then printf '%s' "$DIRECTORIES_JSON" > config/directories.json; fi
+
+      # The status file records what was submitted, pitched and listed, so a
+      # target is never pitched twice. It travels in the Actions cache.
+      - name: Restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: directory-state-${{ github.run_id }}
+          restore-keys: |
+            directory-state-
+
+      - name: Run directory prospector
+        run: node src/directory-submissions.js ${{ inputs.check_only && '--check' || '' }}
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EMAIL_NOTIFY: ${{ vars.EMAIL_NOTIFY }}
+          DIRECTORY_AUTOSUBMIT: ${{ vars.DIRECTORY_AUTOSUBMIT }}
+          SUBMIT_LIMIT: '5'
+
+      - name: Save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: directory-state-${{ github.run_id }}
+
+      - name: Upload submission screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: submission-screenshots
+          path: state/screenshots/
+          if-no-files-found: ignore
+          retention-days: 14

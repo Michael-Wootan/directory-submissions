@@ -1,0 +1,21 @@
+{
+  "name": "directory-submissions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Finds business directories with free listings, tracks each one from to-do to live, pitches email-only targets once, and reports what needs a person.",
+  "main": "src/directory-submissions.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "run": "node src/directory-submissions.js",
+    "check": "node src/directory-submissions.js --check",
+    "discover": "node src/directory-submissions.js --no-submit",
+    "test": "node scripts/test-directories.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "nodemailer": "^8.0.11"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

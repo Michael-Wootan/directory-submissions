@@ -1,0 +1,38 @@
+{
+  "business": {
+    "name": "Acme Supply Co.",
+    "website": "https://www.acmesupply.example",
+    "email": "hello@acmesupply.example",
+    "contactName": "Alex Morgan",
+    "contactTitle": "Founder",
+    "firstName": "Alex",
+    "lastName": "Morgan",
+    "category": "Specialty Coffee",
+    "description": "Acme Supply Co. roasts and ships specialty coffee to home brewers and supplies cafes and offices wholesale."
+  },
+  "directories": [
+    { "name": "Example Business Directory", "url": "https://directory.example", "dr": 70, "category": "business", "submitUrl": "https://directory.example/add-business" },
+    { "name": "Example Coffee Roaster Guide", "url": "https://roasters.example/directory", "dr": 45, "category": "industry", "submitUrl": "https://roasters.example/submit" },
+    { "name": "Example Food Magazine", "url": "https://magazine.example", "dr": 76, "category": "press", "submitUrl": "mailto:features@magazine.example", "notes": "Pitch product features" }
+  ],
+  "discoveryQueries": [
+    "coffee roaster directory \"add your business\"",
+    "specialty coffee directory free listing",
+    "food and beverage business directory \"submit\"",
+    "ecommerce store directory \"add your store\"",
+    "local roaster directory \"list your\"",
+    "small business directory free listing"
+  ],
+  "emailPitches": {
+    "Example Food Magazine": {
+      "subject": "Product feature pitch: Acme Supply Co. single-origin coffees",
+      "angle": "a product feature pitch for a food magazine: suggest the company's single-origin coffees as candidates for product roundups, and offer product details, images or samples",
+      "staticLine": "If our coffees would fit an upcoming roundup or review, I am happy to send product details, images or samples."
+    }
+  },
+  "pitchRules": [
+    "Do not make claims about shipping times or regions served.",
+    "Do not make health claims."
+  ],
+  "categoryTerms": ["coffee", "food", "beverage", "shopping", "retail", "ecommerce", "other"]
+}
